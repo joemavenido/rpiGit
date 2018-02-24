@@ -3,7 +3,7 @@ import socket
 from queue import Queue
 from digi.xbee.devices import XBeeDevice
 
-PRIVATE = '10.100.197.113' # TODO
+PRIVATE = '10.200.180.8' # TODO change to self ip
 PORT = 5000
 COM = 'COM8'
 BAUD_RATE = 9600
@@ -21,7 +21,7 @@ try:
 except:
 	pass
 
-def initConnections():# might not work
+def initConnections():# open zigbee coordinator and open wifi socket. untested
 	global udp_socket
 	global cord
 	udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -32,19 +32,19 @@ def initConnections():# might not work
 	except:
 		pass
 
-def ProcessPacketQueue():
+def ProcessPacketQueue(): # get packet from queue
 	while True:
 		packet = packetQueue.get()
 		parsePacket(packet) # send to parsing module
 		packetQueue.task_done()
 
-def WF_recPackets():
+def WF_recPackets(): # get incomming wifi packets
 	global udp_socket
 	while True:
 		data = udp_socket.recv(512) # might set to 84 to avoid bias
 		packetQueue.put(data)
 
-def ZB_recPackets():
+def ZB_recPackets(): # get incomming zigbee packets. maximum 84 bytes
 	global cord
 	try:
 		while True:
@@ -52,10 +52,6 @@ def ZB_recPackets():
 			if xbee_message is not None:
 
 				packetQueue.put(bytes(xbee_message.data))
-		# def data_receive_callback(xbee_message):
-		# 	packetQueue.put(xbee_message.data.decode())
-
-		# cord.add_data_received_callback(data_receive_callback)
 	except:
 		pass
 
@@ -70,3 +66,7 @@ t1.start()
 t2 = threading.Thread(target = ZB_recPackets)
 t2.daemon = True
 t2.start()
+
+t3 = threading.Thread(target = WF_recPackets)
+t3.daemon = True
+t3.start()

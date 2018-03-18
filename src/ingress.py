@@ -5,7 +5,7 @@ from digi.xbee.devices import XBeeDevice
 
 PRIVATE = '10.200.180.8' # TODO change to self ip
 PORT = 5000
-COM = 'COM8'
+COM = 'COM8' # TODO change to cord port
 BAUD_RATE = 9600
 
 packetQueue=Queue()

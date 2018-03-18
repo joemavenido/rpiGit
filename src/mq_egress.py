@@ -1,5 +1,5 @@
 import pika
-
+from Crypto.Hash import MD5
 BROKER = '192.168.1.4'
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=BROKER))
 channel = connection.channel()
